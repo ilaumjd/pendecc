@@ -3,21 +3,19 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"github.com/ilaumjd/pendecc/handlers"
 )
 
 func main() {
-	mux := http.NewServeMux()
+	urlHandler := handlers.UrlHandler{}
 
-	mux.HandleFunc("GET /default", handleDefault)
+	mux := http.NewServeMux()
+	mux.HandleFunc("POST /urls", urlHandler.CreateShortUrl)
 
 	server := &http.Server{
 		Addr:    ":8080",
 		Handler: mux,
 	}
 	log.Fatal(server.ListenAndServe())
-}
-
-func handleDefault(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("ALL GOOD"))
 }
