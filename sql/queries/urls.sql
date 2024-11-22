@@ -5,3 +5,11 @@ VALUES
   (gen_random_uuid (), $1, $2)
 RETURNING
   *;
+
+-- name: GetUrl :one
+SELECT
+  *
+FROM
+  urls
+WHERE
+  short_url = $1;

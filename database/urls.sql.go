@@ -29,3 +29,19 @@ func (q *Queries) CreateUrl(ctx context.Context, arg CreateUrlParams) (Url, erro
 	err := row.Scan(&i.ID, &i.ShortUrl, &i.DefaultUrl)
 	return i, err
 }
+
+const getUrl = `-- name: GetUrl :one
+SELECT
+  id, short_url, default_url
+FROM
+  urls
+WHERE
+  short_url = $1
+`
+
+func (q *Queries) GetUrl(ctx context.Context, shortUrl string) (Url, error) {
+	row := q.db.QueryRowContext(ctx, getUrl, shortUrl)
+	var i Url
+	err := row.Scan(&i.ID, &i.ShortUrl, &i.DefaultUrl)
+	return i, err
+}

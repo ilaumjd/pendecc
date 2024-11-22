@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -13,6 +14,14 @@ type UrlHandler struct {
 }
 
 func (h *UrlHandler) GetLongUrl(w http.ResponseWriter, r *http.Request) {
+	shortURL := r.PathValue("shortURL")
+	url, err := h.Queries.GetUrl(r.Context(), shortURL)
+	if err != nil {
+		respondWithError(w, http.StatusNotFound)
+		return
+	}
+	defaultURL := fmt.Sprintf("https://%s", url.DefaultUrl)
+	http.Redirect(w, r, defaultURL, http.StatusMovedPermanently)
 }
 
 func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
