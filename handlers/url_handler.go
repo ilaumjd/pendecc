@@ -15,20 +15,20 @@ type UrlHandler struct {
 }
 
 func (h *UrlHandler) GetLongUrl(w http.ResponseWriter, r *http.Request) {
-	shortURL := r.PathValue("shortURL")
-	url, err := h.Queries.GetUrl(r.Context(), shortURL)
+	shortUrl := r.PathValue("shortUrl")
+	url, err := h.Queries.GetUrl(r.Context(), shortUrl)
 	if err != nil {
 		respondWithError(w, http.StatusNotFound)
 		return
 	}
-	defaultURL := fmt.Sprintf("https://%s", url.DefaultUrl)
-	http.Redirect(w, r, defaultURL, http.StatusMovedPermanently)
+	defaultUrl := fmt.Sprintf("https://%s", url.DefaultUrl)
+	http.Redirect(w, r, defaultUrl, http.StatusMovedPermanently)
 }
 
 func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 
 	type CreateShortUrlRequest struct {
-		URL string `json:"url"`
+		Url string `json:"url"`
 	}
 
 	params := CreateShortUrlRequest{}
@@ -40,19 +40,19 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defaultURL := params.URL
-	defaultURL, httpPrefixFound := strings.CutPrefix(defaultURL, "http://")
-	defaultURL, httpsPrefixFound := strings.CutPrefix(defaultURL, "https://")
+	defaultUrl := params.Url
+	defaultUrl, httpPrefixFound := strings.CutPrefix(defaultUrl, "http://")
+	defaultUrl, httpsPrefixFound := strings.CutPrefix(defaultUrl, "https://")
 
 	if !httpPrefixFound && !httpsPrefixFound {
 		respondWithError(w, http.StatusBadRequest)
 		return
 	}
 
-	shortURL := generateShortUrl(defaultURL)
+	shortUrl := generateShortUrl(defaultUrl)
 	url, err := h.Queries.CreateUrl(r.Context(), database.CreateUrlParams{
-		ShortUrl:   shortURL,
-		DefaultUrl: defaultURL,
+		ShortUrl:   shortUrl,
+		DefaultUrl: defaultUrl,
 	})
 
 	if err != nil {
@@ -63,9 +63,9 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, url)
 }
 
-func generateShortUrl(defaultURL string) string {
+func generateShortUrl(defaultUrl string) string {
 	base62Chars := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-	byteSlice := []byte(defaultURL)
+	byteSlice := []byte(defaultUrl)
 	bigInt := new(big.Int).SetBytes(byteSlice)
 	var result []byte
 
