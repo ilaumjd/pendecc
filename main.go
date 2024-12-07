@@ -22,7 +22,7 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /{shortUrl}", urlHandler.GetLongUrl)
+	mux.HandleFunc("GET /{shortUrl}", urlHandler.GetDefaultUrl)
 	mux.HandleFunc("POST /urls", urlHandler.CreateShortUrl)
 
 	server := &http.Server{

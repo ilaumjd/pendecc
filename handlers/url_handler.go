@@ -14,7 +14,7 @@ type UrlHandler struct {
 	Queries *database.Queries
 }
 
-func (h *UrlHandler) GetLongUrl(w http.ResponseWriter, r *http.Request) {
+func (h *UrlHandler) GetDefaultUrl(w http.ResponseWriter, r *http.Request) {
 	shortUrl := r.PathValue("shortUrl")
 	url, err := h.Queries.GetUrl(r.Context(), shortUrl)
 	if err != nil {
@@ -40,6 +40,7 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// remove http/https prefix
 	defaultUrl := params.Url
 	defaultUrl, httpPrefixFound := strings.CutPrefix(defaultUrl, "http://")
 	defaultUrl, httpsPrefixFound := strings.CutPrefix(defaultUrl, "https://")
@@ -49,8 +50,18 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// generate short url
 	shortUrl := generateShortUrl(defaultUrl)
-	url, err := h.Queries.CreateUrl(r.Context(), database.CreateUrlParams{
+
+	// check if short url exists
+	url, _ := h.Queries.GetUrl(r.Context(), shortUrl)
+	if url.DefaultUrl == defaultUrl {
+		respondWithJSON(w, http.StatusOK, url)
+		return
+	}
+
+	// create short url
+	url, err = h.Queries.CreateUrl(r.Context(), database.CreateUrlParams{
 		ShortUrl:   shortUrl,
 		DefaultUrl: defaultUrl,
 	})
