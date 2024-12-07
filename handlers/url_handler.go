@@ -50,18 +50,32 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// generate short url
-	shortUrl := generateShortUrl(defaultUrl)
+	var shortUrl string
 
-	// check if short url exists
-	url, _ := h.Queries.GetUrl(r.Context(), shortUrl)
-	if url.DefaultUrl == defaultUrl {
-		respondWithJSON(w, http.StatusOK, url)
-		return
+	currentString := defaultUrl
+	for {
+		// generate short url
+		currentString = encodeBase62(currentString)[0:7]
+
+		fmt.Println(currentString)
+
+		url, err := h.Queries.GetUrl(r.Context(), currentString)
+
+		// break if not exists
+		if err != nil {
+			shortUrl = currentString
+			break
+		}
+
+		// if exists
+		if url.DefaultUrl == defaultUrl {
+			respondWithJSON(w, http.StatusOK, url)
+			return
+		}
 	}
 
 	// create short url
-	url, err = h.Queries.CreateUrl(r.Context(), database.CreateUrlParams{
+	url, err := h.Queries.CreateUrl(r.Context(), database.CreateUrlParams{
 		ShortUrl:   shortUrl,
 		DefaultUrl: defaultUrl,
 	})
@@ -74,9 +88,9 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, url)
 }
 
-func generateShortUrl(defaultUrl string) string {
+func encodeBase62(defaultString string) string {
 	base62Chars := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-	byteSlice := []byte(defaultUrl)
+	byteSlice := []byte(defaultString)
 	bigInt := new(big.Int).SetBytes(byteSlice)
 	var result []byte
 
@@ -89,5 +103,5 @@ func generateShortUrl(defaultUrl string) string {
 		result = append([]byte{base62Chars[mod.Int64()]}, result...)
 	}
 
-	return string(result)[0:7]
+	return string(result)
 }
