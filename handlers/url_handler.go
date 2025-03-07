@@ -60,7 +60,11 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			shortUrl = customUrl
 		} else if url.DefaultUrl == defaultUrl {
-			respondWithJSON(w, http.StatusOK, url)
+			respondWithJSON(w, http.StatusOK, map[string]string{
+				"id":         url.ID.String(),
+				"shortUrl":   url.ShortUrl,
+				"defaultUrl": url.DefaultUrl,
+			})
 			return
 		} else {
 			respondWithError(w, http.StatusInternalServerError)
@@ -83,7 +87,11 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 
 			// if exists
 			if url.DefaultUrl == defaultUrl {
-				respondWithJSON(w, http.StatusOK, url)
+				respondWithJSON(w, http.StatusOK, map[string]string{
+					"id":         url.ID.String(),
+					"shortUrl":   url.ShortUrl,
+					"defaultUrl": url.DefaultUrl,
+				})
 				return
 			}
 		}
