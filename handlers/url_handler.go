@@ -58,7 +58,6 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 
 		url, err := h.Queries.GetUrl(r.Context(), customUrl)
 		if err != nil {
-			fmt.Printf("error - %v\n", err.Error())
 			shortUrl = customUrl
 		} else if url.DefaultUrl == defaultUrl {
 			respondWithJSON(w, http.StatusOK, url)
