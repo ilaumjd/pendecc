@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"math/big"
 	"net/http"
 	"strings"
@@ -21,8 +20,11 @@ func (h *UrlHandler) GetDefaultUrl(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusNotFound)
 		return
 	}
-	defaultUrl := fmt.Sprintf("https://%s", url.DefaultUrl)
-	http.Redirect(w, r, defaultUrl, http.StatusMovedPermanently)
+	respondWithJSON(w, http.StatusOK, map[string]string{
+		"id":         url.ID.String(),
+		"shortUrl":   url.ShortUrl,
+		"defaultUrl": url.DefaultUrl,
+	})
 }
 
 func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
