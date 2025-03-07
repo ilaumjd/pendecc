@@ -52,25 +52,41 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 
 	var shortUrl string
 
-	currentString := defaultUrl
-	for {
-		// generate short url
-		currentString = encodeBase62(currentString)[0:7]
+	customUrl := r.PathValue("customUrl")
+	// if url custom
+	if customUrl != "" {
 
-		fmt.Println(currentString)
-
-		url, err := h.Queries.GetUrl(r.Context(), currentString)
-
-		// break if not exists
+		url, err := h.Queries.GetUrl(r.Context(), customUrl)
 		if err != nil {
-			shortUrl = currentString
-			break
-		}
-
-		// if exists
-		if url.DefaultUrl == defaultUrl {
+			fmt.Printf("error - %v\n", err.Error())
+			shortUrl = customUrl
+		} else if url.DefaultUrl == defaultUrl {
 			respondWithJSON(w, http.StatusOK, url)
 			return
+		} else {
+			respondWithError(w, http.StatusInternalServerError)
+			return
+		}
+	} else {
+
+		currentString := defaultUrl
+		for {
+			// generate short url
+			currentString = encodeBase62(currentString)[0:7]
+
+			url, err := h.Queries.GetUrl(r.Context(), currentString)
+
+			// break if not exists
+			if err != nil {
+				shortUrl = currentString
+				break
+			}
+
+			// if exists
+			if url.DefaultUrl == defaultUrl {
+				respondWithJSON(w, http.StatusOK, url)
+				return
+			}
 		}
 	}
 

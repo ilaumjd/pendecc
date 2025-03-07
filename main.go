@@ -24,6 +24,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /{shortUrl}", urlHandler.GetDefaultUrl)
 	mux.HandleFunc("POST /urls", urlHandler.CreateShortUrl)
+	mux.HandleFunc("POST /urls/{customUrl}", urlHandler.CreateShortUrl)
 
 	server := &http.Server{
 		Addr:    ":8080",
