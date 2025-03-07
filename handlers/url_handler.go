@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"math/big"
 	"net/http"
 	"strings"
@@ -30,7 +31,8 @@ func (h *UrlHandler) GetDefaultUrl(w http.ResponseWriter, r *http.Request) {
 func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 
 	type CreateShortUrlRequest struct {
-		Url string `json:"url"`
+		Url       string `json:"url"`
+		CustomUrl string `json:"customUrl"`
 	}
 
 	params := CreateShortUrlRequest{}
@@ -54,7 +56,7 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 
 	var shortUrl string
 
-	customUrl := r.PathValue("customUrl")
+	customUrl := params.CustomUrl
 	// if url custom
 	if customUrl != "" {
 
