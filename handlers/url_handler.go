@@ -43,12 +43,13 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// remove http/https prefix
+	// remove http/https prefix, reject another protocol prefix
 	defaultUrl := params.Url
-	defaultUrl, httpPrefixFound := strings.CutPrefix(defaultUrl, "http://")
-	defaultUrl, httpsPrefixFound := strings.CutPrefix(defaultUrl, "https://")
-
-	if !httpPrefixFound && !httpsPrefixFound {
+	if strings.HasPrefix(defaultUrl, "http://") {
+		defaultUrl = strings.TrimPrefix(defaultUrl, "http://")
+	} else if strings.HasPrefix(defaultUrl, "https://") {
+		defaultUrl = strings.TrimPrefix(defaultUrl, "https://")
+	} else if strings.Contains(defaultUrl, "://") {
 		respondWithError(w, http.StatusBadRequest)
 		return
 	}
