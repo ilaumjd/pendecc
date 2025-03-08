@@ -111,7 +111,11 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, url)
+	respondWithJSON(w, http.StatusOK, map[string]string{
+		"id":         url.ID.String(),
+		"shortUrl":   url.ShortUrl,
+		"defaultUrl": url.DefaultUrl,
+	})
 }
 
 func encodeBase62(defaultString string) string {
