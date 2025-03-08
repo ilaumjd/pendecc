@@ -26,7 +26,7 @@ func main() {
 	mux.HandleFunc("POST /urls", urlHandler.CreateShortUrl)
 
 	server := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":5100",
 		Handler: mux,
 	}
 	log.Fatal(server.ListenAndServe())
