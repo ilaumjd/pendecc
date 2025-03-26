@@ -10,6 +10,7 @@ import (
 	"github.com/ilaumjd/pendecc/database"
 	"github.com/ilaumjd/pendecc/handlers"
 	_ "github.com/lib/pq"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -45,9 +46,16 @@ func main() {
 	mux.HandleFunc("GET /urls/{shortUrl}", urlHandler.GetDefaultUrl)
 	mux.HandleFunc("POST /urls", urlHandler.CreateShortUrl)
 
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders: []string{"*"},
+	})
+	handler := c.Handler(mux)
+
 	server := &http.Server{
 		Addr:    ":5102",
-		Handler: mux,
+		Handler: handler,
 	}
 	log.Fatal(server.ListenAndServe())
 }
