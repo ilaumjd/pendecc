@@ -42,7 +42,7 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 	// reject if no protocol
 	defaultUrl := params.Url
 	if !strings.Contains(defaultUrl, "://") {
-		respondWithError(w, http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "URL must contains protocol (ex. http / https)")
 		return
 	}
 
@@ -59,7 +59,7 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 			respondWithURL(w, url)
 			return
 		} else {
-			respondWithError(w, http.StatusInternalServerError)
+			respondWithError(w, http.StatusInternalServerError, "Custom URL is already used")
 			return
 		}
 	} else {
@@ -92,7 +92,7 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError)
+		respondWithError(w, http.StatusInternalServerError, "Failed to create short url")
 		return
 	}
 
