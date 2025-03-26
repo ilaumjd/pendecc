@@ -20,11 +20,7 @@ func (h *UrlHandler) GetDefaultUrl(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusNotFound)
 		return
 	}
-	respondWithJSON(w, http.StatusOK, map[string]string{
-		"id":         url.ID.String(),
-		"shortUrl":   url.ShortUrl,
-		"defaultUrl": url.DefaultUrl,
-	})
+	respondWithURL(w, url)
 }
 
 func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
@@ -64,11 +60,7 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			shortUrl = customUrl
 		} else if url.DefaultUrl == defaultUrl {
-			respondWithJSON(w, http.StatusOK, map[string]string{
-				"id":         url.ID.String(),
-				"shortUrl":   url.ShortUrl,
-				"defaultUrl": url.DefaultUrl,
-			})
+			respondWithURL(w, url)
 			return
 		} else {
 			respondWithError(w, http.StatusInternalServerError)
@@ -91,11 +83,7 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 
 			// if exists
 			if url.DefaultUrl == defaultUrl {
-				respondWithJSON(w, http.StatusOK, map[string]string{
-					"id":         url.ID.String(),
-					"shortUrl":   url.ShortUrl,
-					"defaultUrl": url.DefaultUrl,
-				})
+				respondWithURL(w, url)
 				return
 			}
 		}
@@ -112,6 +100,10 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	respondWithURL(w, url)
+}
+
+func respondWithURL(w http.ResponseWriter, url database.Url) {
 	respondWithJSON(w, http.StatusOK, map[string]string{
 		"id":         url.ID.String(),
 		"shortUrl":   url.ShortUrl,
