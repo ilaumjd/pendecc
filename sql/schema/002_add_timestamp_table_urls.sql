@@ -1,0 +1,7 @@
+-- +goose Up
+ALTER TABLE urls
+ADD COLUMN created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP;
+
+-- +goose Down
+ALTER TABLE urls
+DROP COLUMN created_at;
