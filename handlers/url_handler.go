@@ -67,7 +67,7 @@ func (h *UrlHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
 		currentString := defaultUrl
 		for {
 			// generate short url
-			currentString = encodeBase62(currentString)[0:7]
+			currentString = encodeBase62(currentString)[0:4]
 
 			url, err := h.Queries.GetUrl(r.Context(), currentString)
 
